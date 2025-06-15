@@ -8,23 +8,17 @@ public class Main {
 
     // 데이터 받기
     int N = Integer.parseInt(br.readLine()); // 꽃들의 총 개수
-    int[][] data = new int[N][4];
+    int[][] data = new int[N][2];
     for (int i = 0; i < N; i++) {
       StringTokenizer st = new StringTokenizer(br.readLine());
-      for (int j = 0; j < 4; j++) {
-        data[i][j] = Integer.parseInt(st.nextToken()); // 3 8 7 31은 꽃이 3월 8일에 피어서 7월 31일에 진다
+      for (int j = 0; j < 2; j++) {
+        data[i][j] = Integer.parseInt(st.nextToken()) * 100 + Integer.parseInt(st.nextToken()); // 월에 100을 곱하고 일을 더함
       }
     }
 
-    // 정렬, [A, B, C, D], A부터 작은 순대로 정렬
+    // 정렬, 꽃이 피는 날짜에서 지는 날짜 순으로 오름차순 정렬
     Arrays.sort(data, (a, b) -> {
       if (a[0] == b[0]) {
-        if (a[1] == b[1]) {
-          if (a[2] == b[2]) {
-            return a[3] - b[3];
-          }
-          return a[2] - b[2];
-        }
         return a[1] - b[1];
       }
       return a[0] - b[0];
@@ -32,28 +26,21 @@ public class Main {
 
     // 매일 꽃이 한 가지 이상 피어 있도록 꽃들을 선택할 때, 선택한 꽃들의 최소 개수 계산
     int answer = 0;
-    int endMonth = 3;
-    int endDay = 1;
+    int endDate = 301;
     int idx = 0;
     int tmp = 0;
     while (idx < N) {
       int cnt = 0;
-      int maxMoth = 0;
-      int maxDay = 0;
+      int maxDate = 0;
       for (int i = idx; i < N; i++) {
-        if ((data[i][0] < endMonth) || ((data[i][0] == endMonth) && (data[i][1] <= endDay))) {
-          if ((data[i][2] > endMonth) || ((data[i][2] == endMonth) && (data[i][3] > endDay))) {
-            cnt++;
-            tmp = i;
-            if (maxMoth < data[i][2]) {
-              maxMoth = data[i][2];
-              maxDay = data[i][3];
-            } else if ((maxMoth == data[i][2]) && (maxDay < data[i][3])) {
-              maxMoth = data[i][2];
-              maxDay = data[i][3];
-            }
+        if ((data[i][0] <= endDate) && (data[i][1] > endDate)) {
+          cnt++;
+          tmp = i;
+          if (maxDate < data[i][1]) {
+            maxDate = data[i][1];
           }
-        } else {
+
+        } else if (data[i][0] > endDate) {
           break;
         }
       }
@@ -62,17 +49,16 @@ public class Main {
         idx++;
       } else {
         answer++;
-        endMonth = maxMoth;
-        endDay = maxDay;
+        endDate = maxDate;
         idx = tmp + 1;
       }
 
-      if (endMonth > 11) {
+      if (endDate > 1130) {
         break;
       }
     }
 
-    if (endMonth <= 11) {
+    if (endDate <= 1130) {
       answer = 0;
     }
     System.out.println(answer);
